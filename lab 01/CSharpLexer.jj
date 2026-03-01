@@ -12,7 +12,6 @@ public class CSharpLexer {
 PARSER_END(CSharpLexer)
 
 SKIP: { 
-
     //whitespace
     " "
     |"\t"
@@ -20,16 +19,143 @@ SKIP: {
     |"\r"
     
     //comments
-    //comments
-    | <"//" (~["\n","\r"])*>
-    | <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
-
+    |<"//" (~["\n","\r"])*>
+    |< "/*" (~["*"])* ( "*" (~["/"] (~["*"])* )* )* "/" >
 }
 
 TOKEN : {
     //keywords
+    <ABSTRACT: "abstract">
+    | <AS: "as">
+    | <BASE: "base">
+    | <BOOL: "bool">
+    | <BREAK: "break">
+    | <BYTE: "byte">
+    | <CASE: "case">
+    | <CATCH: "catch">
+    | <CHAR: "char">
+    | <CHECKED: "checked">
+    | <CLASS: "class">
+    | <CONST: "const">
+    | <CONTINUE: "continue">
+    | <DECIMAL: "decimal">
+    | <DEFAULT: "default">
+    | <DELEGATE: "delegate">
+    | <DO: "do">
+    | <DOUBLE: "double">
+    | <ELSE: "else">
+    | <ENUM: "enum">
+    | <EVENT: "event">
+    | <EXPLICIT: "explicit">
+    | <EXTERN: "extern">
+    | <FALSE: "false">
+    | <FINALLY: "finally">
+    | <FIXED: "fixed">
+    | <FLOAT: "float">
+    | <FOR: "for">
+    | <FOREACH: "foreach">
+    | <GOTO: "goto">
+    | <IF: "if">
+    | <IMPLICIT: "implicit">
+    | <IN: "in">
+    | <INT: "int">
+    | <INTERFACE: "interface">
+    | <INTERNAL: "internal">
+    | <IS: "is">
+    | <LOCK: "lock">
+    | <LONG: "long">
+    | <NAMESPACE: "namespace">
+    | <NEW: "new">
+    | <NULL: "null">
+    | <OBJECT: "object">
+    | <OPERATOR: "operator">
+    | <OUT: "out">
+    | <OVERRIDE: "override">
+    | <PARAMS: "params">
+    | <PRIVATE: "private">
+    | <PROTECTED: "protected">
+    | <PUBLIC: "public">
+    | <READONLY: "readonly">
+    | <REF: "ref">
+    | <RETURN: "return">
+    | <SBYTE: "sbyte">
+    | <SEALED: "sealed">
+    | <SHORT: "short">
+    | <SIZEOF: "sizeof">
+    | <STACKALLOC: "stackalloc">
+    | <STATIC: "static">
+    | <STRING: "string">
+    | <STRUCT: "struct">
+    | <SWITCH: "switch">
+    | <THIS: "this">
+    | <THROW: "throw">
+    | <TRUE: "true">
+    | <TRY: "try">
+    | <TYPEOF: "typeof">
+    | <UINT: "uint">
+    | <ULONG: "ulong">
+    | <UNCHECKED: "unchecked">
+    | <UNSAFE: "unsafe">
+    | <USHORT: "ushort">
+    | <USING: "using">
+    | <VIRTUAL: "virtual">
+    | <VOID: "void">
+    | <VOLATILE: "volatile">
+    | <WHILE: "while">
 
-    <
+    // contextual keywords
+    | <ADD: "add">
+    | <ALLOWS: "allows">
+    | <ALIAS: "alias">
+    | <AND: "and">
+    | <ASCENDING: "ascending">
+    | <ARGS: "args">
+    | <ASYNC: "async">
+    | <AWAIT: "await">
+    | <BY: "by">
+    | <DESCENDING: "descending">
+    | <DYNAMIC: "dynamic">
+    | <EQUALS: "equals">
+    | <EXTENSION: "extension">
+    | <FIELD: "field">
+    | <FILE: "file">
+    | <FROM: "from">
+    | <GET: "get">
+    | <GLOBAL: "global">
+    | <GROUP: "group">
+    | <INIT: "init">
+    | <INTO: "into">
+    | <JOIN: "join">
+    | <LET: "let">
+    | <MANAGED: "managed">
+    | <NAMEOF: "nameof">
+    | <NINT: "nint">
+    | <NOT: "not">
+    | <NOTNULL: "notnull">
+    | <NUINT: "nuint">
+    | <ON: "on">
+    | <OR: "or">
+    | <ORDERBY: "orderby">
+    | <PARTIAL_TYPE: "partial">
+    | <PARTIAL_MEMBER: "partial">
+    | <RECORD: "record">
+    | <REMOVE: "remove">
+    | <REQUIRED: "required">
+    | <SCOPED: "scoped">
+    | <SELECT: "select">
+    | <SET: "set">
+    | <UNMANAGED: "unmanaged">
+    | <VALUE: "value">
+    | <VAR: "var">
+    | <WHEN: "when">
+    | <WHERE: "where">
+    | <WITH: "with">
+    | <YIELD: "yield">
+  }
 
- }
+TOKEN : {
+    //identifiers
+      <IDENTIFIER: (["a"-"z","A"-"Z","_"])(["a"-"z","A"-"Z","0"-"9","_"])*>
+    | <VERBATIM_IDENTIFIER: "@" (["a"-"z","A"-"Z","_"])(["a"-"z","A"-"Z","0"-"9","_"])*>
+}
 
