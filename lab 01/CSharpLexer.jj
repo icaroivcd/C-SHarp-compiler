@@ -5,9 +5,12 @@ public class CSharpLexer {
 
   public static void main(String args[]) throws ParseException {
     CSharpLexer lexer = new CSharpLexer(System.in);
-    lexer.CSharpLexer();   
+    Token t;
+    while ((t = lexer.getNextToken()).kind != EOF) {
+      System.out.println(tokenImage[t.kind].toUpperCase().replaceAll("[<>\"]", "") + " " + t.image);
     }
   }
+}
 
 PARSER_END(CSharpLexer)
 
@@ -158,4 +161,74 @@ TOKEN : {
       <IDENTIFIER: (["a"-"z","A"-"Z","_"])(["a"-"z","A"-"Z","0"-"9","_"])*>
     | <VERBATIM_IDENTIFIER: "@" (["a"-"z","A"-"Z","_"])(["a"-"z","A"-"Z","0"-"9","_"])*>
 }
+
+TOKEN : {
+    //operators
+
+    //aritmetic operations
+      <PLUS_ASSIGN: "+=">
+    | <MINUS_ASSIGN: "-=">
+    | <MULT_ASSIGN: "*=">
+    | <DIV_ASSIGN: "/=">
+    | <MOD_ASSIGN: "%=">
+    | <INCREMENT: "++">
+    | <DECREMENT: "--">
+    | <PLUS: "+">
+    | <MINUS: "-">
+    | <MULT: "*">
+    | <DIV: "/">
+    | <MOD: "%">
+
+    //comparison operations
+    | <EQ: "==">
+    | <NE: "!=">
+    | <LE: "<=">
+    | <GE: ">=">
+    | <LT: "<">
+    | <GT: ">">
+
+    //logical operations
+    | <LOGICAL_AND: "&&">
+    | <LOGICAL_OR: "||">
+    | <LOGICAL_NOT: "!">
+
+    //bitwise operations
+    | <LEFT_SHIFT_ASSIGN: "<<=">
+    | <RIGHT_SHIFT_ASSIGN: ">>=">
+    | <AND_ASSIGN: "&=">
+    | <OR_ASSIGN: "|=">
+    | <XOR_ASSIGN: "^=">
+    | <LEFT_SHIFT: "<<">
+    | <RIGHT_SHIFT: ">>">
+    | <BITWISE_AND: "&">
+    | <BITWISE_OR: "|">
+    | <BITWISE_XOR: "^">
+    | <BITWISE_NOT: "~">
+
+    //other operators
+    | <NULL_COALESCE_ASSIGN: "??=">
+    | <NULL_COALESCE: "??">
+    | <NULL_CONDITIONAL: "?.">
+    | <LAMBDA: "=>">
+    | <POINTER: "->">
+    | <RANGE: "..">
+    | <QUESTION: "?">
+    | <COLON: ":">
+    | <ASSIGN: "=">
+}
+
+TOKEN : {
+    //delimiters
+      <SCOPE: "::">
+    | <DOT: ".">
+    | <COMMA: ",">
+    | <SEMICOLON: ";">
+    | <LPAREN: "(">
+    | <RPAREN: ")">
+    | <LBRACE: "{">
+    | <RBRACE: "}">
+    | <LBRACKET: "[">
+    | <RBRACKET: "]">
+}
+
 
