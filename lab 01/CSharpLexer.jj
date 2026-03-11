@@ -1,15 +1,48 @@
 PARSER_BEGIN(CSharpLexer)
 
-
 public class CSharpLexer {
 
-  public static void main(String args[]) throws ParseException {
-    CSharpLexer lexer = new CSharpLexer(System.in);
-    Token t;
-    while ((t = lexer.getNextToken()).kind != EOF) {
-      System.out.println(tokenImage[t.kind].toUpperCase().replaceAll("[<>\"]", "") + " " + t.image);
+    public static void main(String args[]) throws Exception {
+        CSharpLexer scanner = new CSharpLexer(System.in);
+
+        java.util.Map constants = new java.util.HashMap();
+
+        Class clazz = CSharpLexerConstants.class;
+        java.lang.reflect.Field[] fields = clazz.getFields();
+
+        for (int i = 0; i < fields.length; i++) {
+            java.lang.reflect.Field field = fields[i];
+
+            if (field.getType() == int.class) {
+                int modifiers = field.getModifiers();
+
+                boolean isConstant =
+                        java.lang.reflect.Modifier.isPublic(modifiers) &&
+                        java.lang.reflect.Modifier.isStatic(modifiers) &&
+                        java.lang.reflect.Modifier.isFinal(modifiers);
+
+                if (isConstant) {
+                    constants.put(
+                            Integer.valueOf(field.getInt(null)),
+                            field.getName()
+                    );
+                }
+            }
+        }
+
+        Token t;
+
+        do {
+            t = scanner.getNextToken();
+
+            if (t.kind != CSharpLexerConstants.EOF) {
+                System.out.println(
+                        constants.get(Integer.valueOf(t.kind)) + " " + t.image
+                );
+            }
+
+        } while (t.kind != CSharpLexerConstants.EOF);
     }
-  }
 }
 
 PARSER_END(CSharpLexer)
@@ -42,7 +75,7 @@ TOKEN : {
     | <CONST: "const">
     | <CONTINUE: "continue">
     | <DECIMAL: "decimal">
-    | <DEFAULT: "default">
+    | <DEFAULT_KW: "default">
     | <DELEGATE: "delegate">
     | <DO: "do">
     | <DOUBLE: "double">
@@ -139,8 +172,7 @@ TOKEN : {
     | <ON: "on">
     | <OR: "or">
     | <ORDERBY: "orderby">
-    | <PARTIAL_TYPE: "partial">
-    | <PARTIAL_MEMBER: "partial">
+    | <PARTIAL: "partial">
     | <RECORD: "record">
     | <REMOVE: "remove">
     | <REQUIRED: "required">
@@ -206,9 +238,10 @@ TOKEN : {
     | <BITWISE_NOT: "~">
 
     //other operators
-    | <NULL_COALESCE_ASSIGN: "??=">
-    | <NULL_COALESCE: "??">
+    | <NULL_COALESCING_ASSIGN: "??=">
+    | <NULL_COALESCING: "??">
     | <NULL_CONDITIONAL: "?.">
+    | <NULL_CONDITIONAL_INDEX: "?[">
     | <LAMBDA: "=>">
     | <POINTER: "->">
     | <RANGE: "..">
@@ -229,6 +262,36 @@ TOKEN : {
     | <RBRACE: "}">
     | <LBRACKET: "[">
     | <RBRACKET: "]">
+}
+
+TOKEN : {
+    //literals
+    
+    //real literals (DEVE VIR ANTES dos inteiros!)
+      <REAL_LITERAL: (<DECIMAL_DIGITS> "." <DECIMAL_DIGITS> (<EXPONENT>)? (<REAL_SUFFIX>)?)
+                   | ("." <DECIMAL_DIGITS> (<EXPONENT>)? (<REAL_SUFFIX>)?)
+                   | (<DECIMAL_DIGITS> <EXPONENT> (<REAL_SUFFIX>)?)
+                   | (<DECIMAL_DIGITS> <REAL_SUFFIX>)>
+    | <#DECIMAL_DIGITS: (["0"-"9"]) (["0"-"9","_"])*>
+    | <#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"]) (["0"-"9","_"])*>
+    | <#REAL_SUFFIX: ["f","F","d","D","m","M"]>
+    
+    //integer literals
+    | <INTEGER_LITERAL: (<DECIMAL_LITERAL> | <HEX_LITERAL> | <BINARY_LITERAL>) (<INTEGER_SUFFIX>)?>
+    | <#DECIMAL_LITERAL: "0" | (["1"-"9"] (["0"-"9","_"])*)>
+    | <#HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"]) (["0"-"9","a"-"f","A"-"F","_"])*>
+    | <#BINARY_LITERAL: "0" ["b","B"] (["0","1"]) (["0"-"1","_"])*>
+    | <#INTEGER_SUFFIX: ["u","U"] (["l","L"])? (["l","L"])? | (["l","L"]) (["l","L"])? (["u","U"])?>
+    
+    //character literal
+    | <CHARACTER_LITERAL: "'" (<CHAR_CONTENT>) "'">
+    | <#CHAR_CONTENT: (~["'","\\","\r","\n"]) | ("\\" ["'","\"","\\","0","a","b","f","n","r","t","v"]) | ("\\x" (["0"-"9","a"-"f","A"-"F"]){1,4}) | ("\\u" (["0"-"9","a"-"f","A"-"F"]){4}) | ("\\U" (["0"-"9","a"-"f","A"-"F"]){8})>
+    
+    //string literals
+    | <INTERPOLATED_VERBATIM_STRING: (("$@") | ("@$")) "\"" ((~["\""])  | ("\"\"") | "{" | "}")* "\"">
+    | <INTERPOLATED_STRING: "$\"" ((~["\"","\\"] ) | ("\\" (~[])) | ("{{") | ("}}"))* "\"">
+    | <VERBATIM_STRING_LITERAL: "@\"" ((~["\""]) | "\"\"")* "\"">
+    | <STRING_LITERAL: "\"" ((~["\"","\\","\r","\n"]) | ("\\" (~[])))* "\"">
 }
 
 
